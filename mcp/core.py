@@ -8,7 +8,7 @@ from .utils import Timer
 
 
 # Times are in seconds
-REDRAW_INTERVAL = 0.1
+REDRAW_INTERVAL = 1 / 30
 INPUT_TIMEOUT = 0.1
 
 
@@ -40,7 +40,8 @@ class MasterControlProgram:
 
     def keep_drawing(self):
         while self.running:
-            self.draw()
+            if self.redraw_required():
+                self.draw()
             self.handle_input()
 
     def handle_input(self):
