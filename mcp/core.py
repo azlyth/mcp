@@ -8,7 +8,7 @@ from .utils import Timer
 
 
 # Times are in seconds
-REDRAW_INTERVAL = 1
+REDRAW_INTERVAL = 0.1
 INPUT_TIMEOUT = 0.1
 
 
@@ -56,15 +56,18 @@ class MasterControlProgram:
     def redraw_required(self):
         return self.timer.reset_if_elapsed(REDRAW_INTERVAL)
 
-    def draw_box(self, width, height, x, y, title=''):
-        # Get the box
+    def box(self, width, height, x, y, title=''):
+        # Draw the box
         box = Drawer.box(width, height, title=title)
 
         # Split the box into lines and move to the right starting cursor
         # position before drawing the line
+        adjusted_box = ''
         for i, line in enumerate(box.split('\n')):
             move = self.term.move(y + i, x)
-            print(move + line)
+            adjusted_box += move + line
+
+        return adjusted_box
 
     def draw(self):
         # The respective subtractions of 1 and 2 are done to the height and
@@ -76,9 +79,12 @@ class MasterControlProgram:
 
         with self.term.hidden_cursor(), self.term.fullscreen():
             # Draw the boxes
-            self.draw_box(half_width - 1, half_height, 0, 0, title='First')
-            self.draw_box(half_width - 1, half_height, half_width + 1, 0, title='Second')
-            self.draw_box(full_width, half_height, 0, half_height, title='Third')
+            boxes = [
+                self.box(half_width - 1, half_height, 0, 0, title='First'),
+                self.box(half_width - 1, half_height, half_width + 1, 0, title='Second'),
+                self.box(full_width, half_height, 0, half_height, title='Third'),
+            ]
+            print(''.join(boxes))
 
     def do_nothing(self):
         pass
